@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MyFuoye — Log In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#050a00;--dark:#0d1500;--card:#111a00;
+      --green:#39e600;--green2:#27a800;--gold:#f0c000;--gold2:#c99a00;
+      --muted:#7a9060;--border:rgba(57,230,0,0.15);--white:#f0ffe0;
+    }
+    html,body{height:100%;background:var(--black);color:var(--white);font-family:'Nunito',sans-serif}
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(57,230,0,0.08),transparent 70%),
+                 radial-gradient(ellipse 60% 40% at 100% 100%,rgba(240,192,0,0.06),transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+    .layout{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+
+    .left{
+      position:relative;display:flex;flex-direction:column;
+      justify-content:space-between;padding:52px;
+      background:var(--dark);border-right:1px solid var(--border);overflow:hidden;
+    }
+    .blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+    .b1{width:500px;height:500px;background:radial-gradient(circle,rgba(57,230,0,0.15),transparent 70%);top:-160px;left:-160px;animation:b1 9s ease-in-out infinite alternate}
+    .b2{width:350px;height:350px;background:radial-gradient(circle,rgba(240,192,0,0.1),transparent 70%);bottom:-80px;right:-80px;animation:b2 12s ease-in-out infinite alternate}
+    @keyframes b1{to{transform:translate(40px,50px)}}
+    @keyframes b2{to{transform:translate(-30px,-40px)}}
+
+    .logo-img{height:80px;object-fit:contain;position:relative;z-index:1}
+    .hero{position:relative;z-index:1}
+    .hero h1{font-family:'Oswald',sans-serif;font-size:clamp(3rem,5vw,5.5rem);line-height:.92;text-transform:uppercase;font-weight:700}
+    .g{color:var(--green)}.y{color:var(--gold)}
+    .hero p{margin-top:20px;color:var(--muted);font-size:.95rem;line-height:1.7;max-width:340px}
+
+    .testimonial{
+      position:relative;z-index:1;background:rgba(57,230,0,0.05);
+      border:1px solid var(--border);border-radius:14px;padding:20px 22px;
+    }
+    .testimonial p{font-size:.88rem;color:var(--white);line-height:1.6;font-style:italic}
+    .testimonial .author{margin-top:12px;display:flex;align-items:center;gap:10px}
+    .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--green2),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .aname{font-size:.8rem;font-weight:800;color:var(--green)}
+    .arole{font-size:.72rem;color:var(--muted)}
+
+    .right{display:flex;align-items:center;justify-content:center;padding:48px;position:relative;z-index:1}
+    .card{width:100%;max-width:400px;animation:up .5s cubic-bezier(.16,1,.3,1) both}
+    @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    h2{font-family:'Oswald',sans-serif;font-size:2.2rem;letter-spacing:.05em;color:var(--white)}
+    .sub{font-size:.83rem;color:var(--muted);margin:6px 0 26px}
+    .sub a{color:var(--green);text-decoration:none;font-weight:700}
+
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+    label{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:800}
+    input[type=email],input[type=password]{
+      background:rgba(57,230,0,0.04);border:1px solid var(--border);border-radius:8px;
+      padding:12px 14px;font-size:.9rem;font-family:'Nunito',sans-serif;
+      color:var(--white);outline:none;transition:border-color .2s,background .2s,box-shadow .2s;width:100%;
+    }
+    input::placeholder{color:#2e3e24}
+    input:focus{border-color:var(--green);background:rgba(57,230,0,0.07);box-shadow:0 0 0 3px rgba(57,230,0,0.12)}
+    .input-err{border-color:#ff4444 !important;box-shadow:0 0 0 3px rgba(255,68,68,0.12) !important}
+
+    .pw-wrap{position:relative}
+    .pw-wrap input{padding-right:44px;width:100%}
+    .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);line-height:0;transition:color .2s;padding:4px}
+    .eye:hover{color:var(--green)}
+
+    .row-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;margin-top:4px}
+    .remember{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--muted)}
+    .remember input{accent-color:var(--green)}
+    .forgot{font-size:.78rem;color:var(--gold);text-decoration:none;font-weight:700;transition:color .2s}
+    .forgot:hover{color:var(--gold2)}
+
+    .btn{
+      width:100%;padding:14px;border:none;border-radius:9px;cursor:pointer;
+      font-family:'Oswald',sans-serif;font-size:1.05rem;letter-spacing:.1em;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#050a00;font-weight:600;transition:opacity .2s,transform .15s,box-shadow .2s;
+      position:relative;overflow:hidden;
+    }
+    .btn:hover{opacity:.92;box-shadow:0 4px 20px rgba(57,230,0,0.35)}
+    .btn:active{transform:scale(.98)}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+
+    .divider{display:flex;align-items:center;gap:10px;margin:18px 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .divider span{font-size:.68rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+
+    .socials{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .sbtn{
+      display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;
+      background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;
+      cursor:pointer;font-family:'Nunito',sans-serif;font-size:.82rem;
+      color:var(--white);font-weight:600;transition:all .2s;
+    }
+    .sbtn:hover{border-color:rgba(57,230,0,0.45);background:rgba(57,230,0,0.07);transform:translateY(-1px)}
+
+    .toast{
+      position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:#1a2a00;border:1px solid var(--green);border-radius:10px;
+      padding:14px 24px;font-size:.88rem;color:var(--green);font-weight:700;
+      z-index:99;transition:transform .35s cubic-bezier(.16,1,.3,1);
+      white-space:nowrap;box-shadow:0 8px 32px rgba(57,230,0,0.2);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0)}
+
+    /* Forgot password modal */
+    .overlay{position:fixed;inset:0;background:rgba(5,10,0,.85);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .overlay.show{display:flex}
+    .modal{background:var(--dark);border:1px solid var(--border);border-radius:16px;padding:36px;width:90%;max-width:380px;animation:up .4s cubic-bezier(.16,1,.3,1) both}
+    .modal h3{font-family:'Oswald',sans-serif;font-size:1.5rem;color:var(--gold);margin-bottom:8px}
+    .modal p{font-size:.83rem;color:var(--muted);margin-bottom:20px;line-height:1.6}
+    .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.3rem}
+    .modal{position:relative}
+
+    @media(max-width:768px){
+      .layout{grid-template-columns:1fr}
+      .left{display:none}
+      .right{padding:28px 20px}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div class="left">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <img class="logo-img" src="logo.png" alt="MyFuoye"/>
+    <div class="hero">
+      <h1><span class="g">Welcome</span><br/><span class="y">Back</span><br/><span class="g">Friend.</span></h1>
+      <p>Your academic community is waiting. Log in to pick up where you left off.</p>
+    </div>
+    <div class="testimonial">
+      <p>"MyFuoye helped me connect with my department and find study groups I never knew existed. Life-changing!"</p>
+      <div class="author">
+        <div class="av">👩‍🎓</div>
+        <div>
+          <div class="aname">Amaka Okonkwo</div>
+          <div class="arole">300L · Computer Science</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="card">
+      <h2>Sign In</h2>
+      <p class="sub">New here? <a href="signup.html">Create an account</a></p>
+
+      <div class="field">
+        <label for="email">Email / Matric No.</label>
+        <input type="email" id="email" placeholder="you@fuoye.edu.ng" autocomplete="email"/>
+      </div>
+
+      <div class="field">
+        <label for="pw">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="pw" placeholder="Your password" autocomplete="current-password"/>
+          <button class="eye" onclick="togglePw()" type="button">
+            <svg id="eye-ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between">
+        <label class="remember"><input type="checkbox" id="remember"/> Remember me</label>
+        <a class="forgot" href="#" onclick="openForgot();return false">Forgot password?</a>
+      </div>
+
+      <button class="btn" id="login-btn" onclick="doLogin()">Sign In</button>
+
+      <div class="divider"><span>or continue with</span></div>
+      <div class="socials">
+        <button class="sbtn">
+          <svg width="15" height="15" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="sbtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="overlay" id="forgot-overlay" onclick="closeForgot(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeForgot()">✕</button>
+    <h3>Reset Password</h3>
+    <p>Enter your registered email and we'll send you a reset link.</p>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="reset-email" placeholder="you@fuoye.edu.ng"/>
+    </div>
+    <button class="btn" style="margin-top:4px" onclick="sendReset()">Send Reset Link</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function togglePw() {
+    const inp = document.getElementById('pw');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    document.getElementById('eye-ico').innerHTML = show
+      ? '<path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-11-8-11-8a18 18 0 0 1 5.06-5.94M9.9 4.24A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  function showToast(msg, ok=true) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.borderColor = ok ? 'var(--green)' : '#ff4444';
+    t.style.color = ok ? 'var(--green)' : '#ff6666';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  function doLogin() {
+    const e = document.getElementById('email').value.trim();
+    const p = document.getElementById('pw').value;
+    let ok = true;
+    if (!e || !/\S+@\S+/.test(e)) {
+      document.getElementById('email').classList.add('input-err'); ok=false;
+    } else document.getElementById('email').classList.remove('input-err');
+    if (!p) {
+      document.getElementById('pw').classList.add('input-err'); ok=false;
+    } else document.getElementById('pw').classList.remove('input-err');
+    if (!ok) { showToast('Please fill in all fields.', false); return; }
+
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing In...';
+    setTimeout(() => {
+      showToast('Welcome back! 🎓');
+      setTimeout(() => window.location.href = 'interests.html', 1200);
+    }, 1500);
+  }
+
+  function openForgot() { document.getElementById('forgot-overlay').classList.add('show') }
+  function closeForgot(e) {
+    if (!e || e.target === document.getElementById('forgot-overlay'))
+      document.getElementById('forgot-overlay').classList.remove('show');
+  }
+  function sendReset() {
+    const e = document.getElementById('reset-email').value.trim();
+    if (!e) return;
+    closeForgot();
+    showToast('Reset link sent to ' + e);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MyFuoye — People to Follow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#050a00;--dark:#0d1500;--card:#0f1800;
+      --green:#39e600;--green2:#27a800;--gold:#f0c000;--gold2:#c99a00;
+      --muted:#6a8050;--border:rgba(57,230,0,0.14);--white:#f0ffe0;
+    }
+    html,body{min-height:100%;background:var(--black);color:var(--white);font-family:'Nunito',sans-serif}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(57,230,0,0.07),transparent 65%);pointer-events:none;z-index:0}
+
+    nav{
+      position:sticky;top:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 40px;background:rgba(5,10,0,0.92);
+      border-bottom:1px solid var(--border);backdrop-filter:blur(12px);
+    }
+    nav img{height:44px;object-fit:contain}
+    .step-row{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+    .step.done{color:var(--green)}.step.active{color:var(--gold)}.step{color:var(--muted)}
+    .step-sep{color:var(--border)}
+
+    main{position:relative;z-index:1;padding:48px 40px;max-width:860px;margin:0 auto}
+    .page-title{font-family:'Oswald',sans-serif;font-size:2.4rem;text-transform:uppercase;letter-spacing:.04em}
+    .page-title span{color:var(--gold)}
+    .page-sub{color:var(--muted);font-size:.9rem;margin-top:8px;margin-bottom:28px}
+
+    /* Filter row */
+    .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+    .filter-btn{
+      padding:6px 16px;border-radius:999px;font-size:.75rem;font-weight:800;
+      letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .2s;
+      background:rgba(57,230,0,0.05);color:var(--muted);border:1px solid var(--border);
+    }
+    .filter-btn:hover{border-color:rgba(57,230,0,0.35);color:var(--white)}
+    .filter-btn.active{background:var(--gold);color:#050a00;border-color:var(--gold)}
+
+    /* Follow all */
+    .follow-all-row{display:flex;justify-content:flex-end;margin-bottom:16px}
+    .btn-follow-all{
+      padding:8px 20px;border-radius:8px;border:1px solid var(--green);
+      background:transparent;color:var(--green);font-family:'Nunito',sans-serif;
+      font-size:.8rem;font-weight:800;cursor:pointer;transition:all .2s;
+    }
+    .btn-follow-all:hover{background:rgba(57,230,0,0.1)}
+
+    /* Grid */
+    .follow-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+    .person-card{
+      background:var(--card);border:1px solid var(--border);border-radius:16px;
+      padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:11px;
+      text-align:center;transition:all .22s;position:relative;overflow:hidden;
+    }
+    .person-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(57,230,0,0.05),transparent 70%);opacity:0;transition:opacity .3s}
+    .person-card:hover{border-color:rgba(57,230,0,0.3);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.4)}
+    .person-card:hover::before{opacity:1}
+    .person-card.followed{border-color:rgba(57,230,0,0.4)}
+
+    .avatar{
+      width:68px;height:68px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;border:2px solid var(--border);
+      background:linear-gradient(135deg,var(--dark),#1a2800);
+      transition:border-color .2s;flex-shrink:0;
+    }
+    .person-card.followed .avatar{border-color:var(--green);box-shadow:0 0 0 3px rgba(57,230,0,0.15)}
+
+    .badge{
+      position:absolute;top:14px;right:14px;
+      padding:3px 9px;border-radius:999px;font-size:.62rem;font-weight:800;
+      letter-spacing:.07em;text-transform:uppercase;
+    }
+    .badge-lect{background:rgba(240,192,0,0.15);color:var(--gold);border:1px solid rgba(240,192,0,0.3)}
+    .badge-off{background:rgba(57,230,0,0.15);color:var(--green);border:1px solid rgba(57,230,0,0.3)}
+    .badge-stu{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid rgba(255,255,255,0.1)}
+
+    .p-name{font-weight:900;font-size:.95rem;color:var(--white)}
+    .p-handle{font-size:.75rem;color:var(--muted)}
+    .p-bio{font-size:.77rem;color:var(--muted);line-height:1.55;max-width:180px}
+    .p-stats{display:flex;gap:16px;margin-top:2px}
+    .p-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .p-stat-n{font-size:.85rem;font-weight:900;color:var(--white)}
+    .p-stat-l{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+    .follow-btn{
+      padding:9px 28px;border-radius:999px;border:none;cursor:pointer;
+      font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;
+      background:var(--green);color:#050a00;transition:all .2s;margin-top:4px;
+      min-width:120px;
+    }
+    .follow-btn.following{
+      background:transparent;color:var(--green);
+      border:1.5px solid var(--green);
+    }
+    .follow-btn:hover{opacity:.85;transform:scale(.97)}
+
+    .bar-spacer{height:88px}
+
+    .bottom-bar{
+      position:fixed;bottom:0;left:0;right:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 40px;background:rgba(5,10,0,0.95);
+      border-top:1px solid var(--border);backdrop-filter:blur(12px);
+    }
+    .sel-info{font-size:.85rem;color:var(--muted);font-weight:700}
+    .sel-info span{color:var(--gold);font-size:1.1rem}
+    .bar-btns{display:flex;gap:12px}
+    .btn-back{background:none;border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;transition:all .2s}
+    .btn-back:hover{border-color:rgba(57,230,0,0.3);color:var(--white)}
+    .btn-finish{
+      padding:11px 32px;background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#050a00;border:none;border-radius:8px;cursor:pointer;
+      font-family:'Oswald',sans-serif;font-size:1.05rem;letter-spacing:.08em;
+      font-weight:600;transition:opacity .2s,box-shadow .2s;
+    }
+    .btn-finish:hover{opacity:.9;box-shadow:0 4px 18px rgba(57,230,0,0.35)}
+
+    .toast{
+      position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:#1a2a00;border:1px solid var(--green);border-radius:10px;
+      padding:14px 24px;font-size:.88rem;color:var(--green);font-weight:700;
+      z-index:99;transition:transform .35s cubic-bezier(.16,1,.3,1);
+      white-space:nowrap;box-shadow:0 8px 32px rgba(57,230,0,0.2);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:600px){
+      nav{padding:12px 20px}
+      main{padding:28px 16px}
+      .bottom-bar{padding:14px 20px}
+      .follow-grid{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <img src="logo.png" alt="MyFuoye"/>
+  <div class="step-row">
+    <div class="step done">✓ Account</div>
+    <span class="step-sep">›</span>
+    <div class="step done">✓ Interests</div>
+    <span class="step-sep">›</span>
+    <div class="step active">Follow</div>
+  </div>
+</nav>
+
+<main>
+  <div class="page-title">People to <span>Follow</span></div>
+  <div class="page-sub">Suggested based on your interests — follow people to fill your feed with great content.</div>
+
+  <div class="filter-row" id="filter-row"></div>
+  <div class="follow-all-row">
+    <button class="btn-follow-all" onclick="followAll()">Follow All Shown</button>
+  </div>
+  <div class="follow-grid" id="follow-grid"></div>
+  <div class="bar-spacer"></div>
+</main>
+
+<div class="bottom-bar">
+  <div class="sel-info">Following <span id="follow-n">0</span> people</div>
+  <div class="bar-btns">
+    <button class="btn-back" onclick="window.location.href='interests.html'">← Back</button>
+    <button class="btn-finish" onclick="finish()">Finish & Enter MyFuoye 🎓</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const people = [
+    {em:'👩‍🏫',name:'Dr. Amaka Obi',handle:'@dr.amaka',bio:'Lecturer · Computer Science Dept · FUOYE',role:'Lecturer',posts:'241',followers:'3.2k',following:'108'},
+    {em:'👨‍💻',name:'Tunde Adeleke',handle:'@tunde_dev',bio:'Final year · Web Dev & AI enthusiast · Tech blogger',role:'Student',posts:'89',followers:'1.4k',following:'312'},
+    {em:'👩‍🔬',name:'Ngozi Ike',handle:'@ngoziresearch',bio:'Postgrad · Biochemistry · Research fellow',role:'Student',posts:'135',followers:'2.1k',following:'87'},
+    {em:'👨‍🎓',name:'Prof. Bola James',handle:'@profbola',bio:'HOD Engineering · Author · Mentor · FUOYE since 2003',role:'Lecturer',posts:'312',followers:'5.8k',following:'44'},
+    {em:'✍️',name:'Fatima Al-Hassan',handle:'@fatima.writes',bio:'100L · Law · Campus blogger · Creative writer',role:'Student',posts:'56',followers:'890',following:'204'},
+    {em:'🏛️',name:'FUOYE Updates',handle:'@fuoyeofficial',bio:'Official news, events & announcements from FUOYE',role:'Official',posts:'1.2k',followers:'28k',following:'12'},
+    {em:'🎨',name:'Creative Hub FUOYE',handle:'@fuoye.creative',bio:'Art, design & photography community on campus',role:'Official',posts:'488',followers:'6.4k',following:'230'},
+    {em:'🏅',name:'Emeka Sports',handle:'@emeka_sports',bio:'200L · Physical Education · Campus sports analyst',role:'Student',posts:'203',followers:'1.9k',following:'455'},
+    {em:'🔬',name:'ScienceNerd NG',handle:'@sciencenerd',bio:'Postgrad · Physics · Popularising African science',role:'Student',posts:'167',followers:'4.3k',following:'98'},
+    {em:'📢',name:'FUOYE Student Union',handle:'@fuoyesu',bio:'Your official student union — events, welfare & voice',role:'Official',posts:'743',followers:'18k',following:'55'},
+    {em:'💡',name:'Ifeoma Tech',handle:'@ifeoma.tech',bio:'400L · Software Engineering · She codes, she leads',role:'Student',posts:'94',followers:'2.7k',following:'167'},
+    {em:'📚',name:'Study Circle NG',handle:'@studycircleng',bio:'Free resources, past questions & academic tips',role:'Official',posts:'920',followers:'11.3k',following:'72'},
+  ];
+
+  const roles = ['All','Student','Lecturer','Official'];
+  let activeRole = 'All';
+  let followed = new Set();
+
+  // Filters
+  const fr = document.getElementById('filter-row');
+  roles.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (r==='All'?' active':'');
+    btn.textContent = r==='All' ? 'All People' : r+'s';
+    btn.onclick = () => {
+      activeRole = r;
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid();
+    };
+    fr.appendChild(btn);
+  });
+
+  function renderGrid() {
+    const grid = document.getElementById('follow-grid');
+    grid.innerHTML = '';
+    const list = activeRole==='All' ? people : people.filter(p=>p.role===activeRole);
+    list.forEach(p => {
+      const isF = followed.has(p.handle);
+      const badgeCls = p.role==='Lecturer'?'badge-lect':p.role==='Official'?'badge-off':'badge-stu';
+      const el = document.createElement('div');
+      el.className = 'person-card' + (isF?' followed':'');
+      el.id = 'card-'+p.handle.replace('@','');
+      el.innerHTML = `
+        <div class="badge ${badgeCls}">${p.role}</div>
+        <div class="avatar">${p.em}</div>
+        <div class="p-name">${p.name}</div>
+        <div class="p-handle">${p.handle}</div>
+        <div class="p-bio">${p.bio}</div>
+        <div class="p-stats">
+          <div class="p-stat"><div class="p-stat-n">${p.posts}</div><div class="p-stat-l">Posts</div></div>
+          <div class="p-stat"><div class="p-stat-n">${p.followers}</div><div class="p-stat-l">Followers</div></div>
+          <div class="p-stat"><div class="p-stat-n">${p.following}</div><div class="p-stat-l">Following</div></div>
+        </div>
+        <button class="follow-btn ${isF?'following':''}" onclick="toggleFollow('${p.handle}',this,event)">
+          ${isF?'Following ✓':'Follow'}
+        </button>
+      `;
+      grid.appendChild(el);
+    });
+  }
+
+  function toggleFollow(handle, btn, e) {
+    e && e.stopPropagation();
+    const card = document.getElementById('card-'+handle.replace('@',''));
+    if (followed.has(handle)) {
+      followed.delete(handle);
+      btn.textContent = 'Follow';
+      btn.classList.remove('following');
+      card.classList.remove('followed');
+    } else {
+      followed.add(handle);
+      btn.textContent = 'Following ✓';
+      btn.classList.add('following');
+      card.classList.add('followed');
+    }
+    document.getElementById('follow-n').textContent = followed.size;
+  }
+
+  function followAll() {
+    const list = activeRole==='All' ? people : people.filter(p=>p.role===activeRole);
+    list.forEach(p => followed.add(p.handle));
+    document.getElementById('follow-n').textContent = followed.size;
+    renderGrid();
+    showToast('Following everyone shown! 🎉');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+  }
+
+  function finish() {
+    showToast('Welcome to MyFuoye! Building your feed...');
+    setTimeout(()=>window.location.href='feed.html', 1400);
+  }
+
+  renderGrid();
+</script>
+</body>
+</html>
